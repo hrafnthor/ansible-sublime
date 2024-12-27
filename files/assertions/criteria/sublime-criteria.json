@@ -1,0 +1,43 @@
+{
+    "title": "sublime",
+    "description": "A json schema definition for sublime Ansible installation",
+    "type": "object",
+    "properties":
+    {
+        "signing":
+        {
+            "type": "object",
+            "properties":
+            {
+                "path":
+                {
+                    "ref": "#/definitions/non-empty-string"
+                },
+                "force":
+                {
+                    "type": "boolean"
+                },
+                "priority":
+                {
+                    "type:": "boolean"
+                }
+            },
+            "required":
+            [
+                "path"
+            ]
+        },
+        "version":
+        {
+            "ref": "#/definitions/non-empty-string"
+        }
+    },
+    "definitions":
+    {
+        "non-empty-string":
+        {
+            "type": "string",
+            "minLength": 1
+        }
+    }
+}
