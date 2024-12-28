@@ -1,0 +1,34 @@
+- name: "Sublime | Assertion | Run assertions"
+  ansible.utils.validate:
+    data: "{{ sublime }}"
+    criteria: "{{ lookup('file', 'assertions/criteria/sublime-criteria.json') | from_json }}"
+    engine: ansible.utils.jsonschema
+  run_once: yes
+  delegate_to: localhost
+  when:
+    - sublime is defined
+
+- name: "Sublime | Configure repository"
+  ansible.builtin.include_tasks: repository.yml
+  when:
+    - sublime is defined
+    - sublime.signing is defined
+ 
+- name: "Sublime | Install latest version"
+  ansible.builtin.apt:
+    name: "sublime-text"
+    state: latest
+    update_cache: yes
+  when:
+    - sublime is defined
+    - sublime.version is undefined
+    
+- name: "Sublime | Install specific version"
+  ansible.builtin.apt:
+    name: "sublime-text={{ sublime.version }}"
+    state: present
+    allow_downgrade: yes
+    update_cache: yes
+  when:
+    - sublime is defined
+    - sublime.version is defined

@@ -1,0 +1,40 @@
+# --------------------------------------------------------------------------------
+# This file conatins tasks related to configuring and installing Sublime directly
+# from Sublime's own package repository.
+# --------------------------------------------------------------------------------
+
+- name: "Sublime | Repository | Assure keyrings directory"
+  ansible.builtin.file:
+    path: "/etc/apt/keyrings"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+    modification_time: preserve
+    access_time: preserve
+
+- name: "Sublime | Repository | Add repository signing key"
+  ansible.builtin.copy:
+    src: "{{ sublime.signing.path }}"
+    dest: "/etc/apt/keyrings/packages.sublime.org.asc"
+    force: "{{ sublime.signing.force | default(omit) }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Sublime | Repository | Add repository to sources"
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/packages.sublime.org.asc] https://download.sublimetext.com/ apt/stable/"
+    state: present
+    filename: sublime
+
+- name: "Sublime | Repository | Prioritize repository"
+  ansible.builtin.copy:
+    src: sublime
+    dest: "/etc/apt/preferences.d/sublime"
+    owner: root
+    group: root
+    mode: 0644
+  when:
+    - sublime.priority is defined
+    - sublime.priority
