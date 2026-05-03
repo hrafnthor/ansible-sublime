@@ -30,6 +30,10 @@
         "version":
         {
             "ref": "#/definitions/non-empty-string"
+        },
+        "remove": {
+            "description": "Indicates if the package version should be removed. Defaults to false.",
+            "type": "boolean"
         }
     },
     "definitions":
