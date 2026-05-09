@@ -1,4 +1,4 @@
-- name: "Sublime | Assertion | Run assertions"
+- name: "HTH | Sublime | Assertion | Run assertions"
   ansible.utils.validate:
     data: "{{ sublime }}"
     criteria: "{{ lookup('file', 'assertions/criteria/sublime-criteria.json') | from_json }}"
@@ -8,27 +8,25 @@
   when:
     - sublime is defined
 
-- name: "Sublime | Configure repository"
-  ansible.builtin.include_tasks: repository.yml
+- name: "HTH | Sublime | Manage repository"
+  ansible.builtin.import_tasks: repository.yml
   when:
     - sublime is defined
-    - sublime.signing is defined
- 
-- name: "Sublime | Install latest version"
+
+- name: "HTH | Sublime | Manage installation"
   ansible.builtin.apt:
-    name: "sublime-text"
-    state: latest
-    update_cache: yes
-  when:
-    - sublime is defined
-    - sublime.version is undefined
-    
-- name: "Sublime | Install specific version"
-  ansible.builtin.apt:
-    name: "sublime-text={{ sublime.version }}"
-    state: present
+    name: "{{ 'sublime-text' if(sublime.remove is defined and sublime.remove or sublime.version is undefined) else 'sublime-text=' + (sublime.version | string)  }}"
+    state: "{{ 'absent' if (sublime.remove is defined and sublime.remove) else 'latest' if (sublime.version is undefined) else 'present' }}"
+    #update_cache: yes
     allow_downgrade: yes
-    update_cache: yes
   when:
     - sublime is defined
-    - sublime.version is defined
+
+- name: "HTH | Sublime | Manage configs"
+  ansible.builtin.include_tasks: config.yml
+  loop: "{{ sublime.configs }}"
+  loop_control:
+    loop_var: config
+  when:
+    - sublime is defined
+    - sublime.configs is defined

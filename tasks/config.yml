@@ -1,0 +1,63 @@
+- name: "HTH | Sublime | Set config directory path"
+  ansible.builtin.set_fact:
+    hth_sublime_config_dir: "/home/{{ config.user }}/{{ hth_sublime_user_config_path }}"
+
+- name: "HTH | Sublime | Create config directory"
+  ansible.builtin.file:
+    path: "{{ hth_sublime_config_dir }}"
+    state: "{{ 'directory' if (sublime.remove is undefined or not sublime.remove) else 'absent' }}"
+    owner: "{{ config.user }}"
+    group: "{{ config.user }}"
+    modification_time: preserve
+    access_time: preserve
+    recurse: "{{ 'true' if (sublime.remove is undefined or not sublime.remove) else omit }}"
+
+- name: "HTH | Sublime | Set preference file path"
+  ansible.builtin.set_fact:
+    hth_sublime_preferences_file_path: "{{ hth_sublime_config_dir }}/{{ hth_sublime_user_preference_filename }}"
+  when:
+    - config.preferences is defined
+
+- name: "HTH | Sublime | Copy preference file"
+  ansible.builtin.copy:
+    src: "{{ config.preferences.path }}"
+    dest: "{{ hth_sublime_preferences_file_path }}"
+    owner: "{{ config.user }}"
+    group: "{{ config.user }}"
+    mode: 0600
+  when:
+    - sublime.remove is undefined or not sublime.remove
+    - config.preferences is defined
+    - config.preferences.remove is undefined or not config.preferences.remove
+
+- name: "HTH | Sublime | Remove preference file"
+  ansible.builtin.file:
+    path: "{{ hth_sublime_preferences_file_path }}"
+    state: absent
+  when:
+    - config.preferences.remove is defined and config.preferences.remove
+
+- name: "HTH | Sublime | Set keymap file path"
+  ansible.builtin.set_fact:
+    hth_sublime_keymap_file_path: "{{ hth_sublime_config_dir }}/{{ hth_sublime_user_keymap_filename }}"
+  when:
+    - config.keymap is defined
+
+- name: "HTH | Sublime | Copy keymap file"
+  ansible.builtin.copy:
+    src: "{{ config.keymap.path }}"
+    dest: "{{ hth_sublime_keymap_file_path }}"
+    owner: "{{ config.user }}"
+    group: "{{ config.user }}"
+    mode: 0600
+  when:
+    - sublime.remove is undefined or not sublime.remove
+    - config.keymap is defined
+    - config.keymap.remove is undefined or not config.keymap.remove
+
+- name: "HTH | Sublime | Remove keymap file"
+  ansible.builtin.file:
+    path: "{{ hth_sublime_keymap_file_path }}"
+    state: absent
+  when:
+     - config.keymap.remove is defined and config.keymap.remove

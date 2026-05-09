@@ -1,0 +1,21 @@
+- name: Prepare
+  hosts: all
+  become: true
+  gather_facts: true
+  pre_tasks:
+    - name: Create test user Bob
+      ansible.builtin.user:
+        name: bob
+        state: present
+        create_home: yes
+        shell: /bin/bash
+        groups: []
+        append: no
+  roles:
+  - role: hth.sublime
+    vars:
+      sublime:
+        signing:
+          path: "signing.asc"
+          force: true
+        priority: true

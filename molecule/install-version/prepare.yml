@@ -1,0 +1,15 @@
+- name: Prepare for role testing
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Update apt cache
+      tags: system,utilities
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: install libgl1 (needed for subl version checking)
+      apt:
+        name: libgl1
+        state: latest
+      when: ansible_facts['os_family'] == 'Debian'
