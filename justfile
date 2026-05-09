@@ -25,3 +25,7 @@ test-install-version *EXTRA:
 # Test only the removal scenario
 test-removal *EXTRA:
   @just test --scenario-name remove {{EXTRA}}
+
+# Test only the management of configs scenario
+test-config *EXTRA:
+  @just test --scenario-name configs {{EXTRA}}

@@ -1,6 +1,6 @@
 - name: "HTH | Sublime | Repository | Assure keyrings directory"
   ansible.builtin.file:
-    path: "/etc/apt/keyrings"
+    path: "{{ hth_sublime_repository_signing_directory_path }}"
     state: directory
     owner: root
     group: root
@@ -8,22 +8,25 @@
     modification_time: preserve
     access_time: preserve
 
+- name: "HTH | Sublime | Repository | Set signing key path"
+  ansible.builtin.set_fact:
+    hth_sublime_signing_key_path: "{{ hth_sublime_repository_signing_directory_path }}/{{ hth_sublime_repository_signing_key_filename }}"
+
 - name: "HTH | Sublime | Repository | Add repository signing key"
   ansible.builtin.copy:
     src: "{{ sublime.signing.path }}"
-    dest: "{{ hth_sublime_repository_signing_key_path }}"
+    dest: "{{ hth_sublime_signing_key_path }}"
     force: "{{ sublime.signing.force | default(omit) }}"
     owner: root
     group: root
     mode: 0644
   when:
-    - sublime.remove is undefined or not sublime.remove
     - sublime.signing is defined
 
 - name: "HTH | Sublime | Repository | Manage repository source listing"
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by={{ hth_sublime_repository_signing_key_path }}] {{ hth_sublime_apt_repository_url }} apt/stable/"
-    state: "{{ 'present' if (sublime.remove is undefined or not sublime.remove ) else 'absent' }}"
+    repo: "deb [signed-by={{ hth_sublime_signing_key_path }}] {{ hth_sublime_apt_repository_url }} apt/stable/"
+    state: "{{ 'present' if ((sublime.remove is undefined or not sublime.remove) and sublime.signing is defined) else 'absent' }}"
     filename: sublime
 
 - name: "HTH | Sublime | Repository | Prioritize repository"
@@ -40,7 +43,7 @@
 
 - name: "HTH | Sublime | Repository | Remove repository signing keys"
   ansible.builtin.file:
-    path: "{{ hth_sublime_repository_signing_key_path }}"
+    path: "{{ hth_sublime_signing_key_path }}"
     state: absent
   when:
     - sublime.remove is defined

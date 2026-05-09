@@ -31,9 +31,59 @@
         {
             "ref": "#/definitions/non-empty-string"
         },
-        "remove": {
+        "remove":
+        {
             "description": "Indicates if the package version should be removed. Defaults to false.",
             "type": "boolean"
+        },
+        "configs":
+        {
+            "type": "array",
+            "items":
+            {
+                "type": "object",
+                "properties":
+                {
+                    "user":
+                    {
+                        "ref": "#/definitions/non-empty-string"
+                    },
+                    "preferences":
+                    {
+                        "type": "object",
+                        "properties":
+                        {
+                            "path":
+                            {
+                                "ref": "#/definitions/non-empty-string"
+                            },
+                            "remove":
+                            {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "keymap":
+                    {
+                        "type": "object",
+                        "properties":
+                        {
+                            "path":
+                            {
+                                "ref": "#/definitions/non-empty-string"
+                            },
+                            "remove":
+                            {
+                                "type": "boolean"
+                            }
+                        }
+                    }
+                },
+                "required":
+                [
+                    "user"
+                ]
+            }
         }
     },
     "definitions":

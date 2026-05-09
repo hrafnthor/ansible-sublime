@@ -16,9 +16,9 @@
       msg: "'subl' is still installed"
     when: not sublime_version.rc != 0
 
-  - name: Lookup for repository signing key
+  - name: Lookup repository signing key
     stat:
-      path: "{{ hth_sublime_repository_signing_key_path }}"
+      path: "{{ hth_sublime_repository_signing_directory_path }}/{{ hth_sublime_repository_signing_key_filename }}"
     register: sublime_repo_signing_key_stat
 
   - name: Ensure repository signing key was removed
@@ -26,7 +26,7 @@
       msg: "Repository signing key for Sublime was still found!"
     when: sublime_repo_signing_key_stat.stat.exists
 
-  - name: Lookup for priority file
+  - name: Lookup priority file
     stat:
       path: "{{ hth_sublime_apt_preference_path }}"
     register: sublime_prefs_stat
@@ -48,3 +48,14 @@
       msg: "Sublime apt repository is still present!"
     when:
       - sublime_apt_repo.rc == 0
+
+  - name: Look up user's Sublime config directory
+    stat:
+      path: "/home/bob/{{ hth_sublime_user_config_path}}"
+    register: sublime_user_config_dir_stat
+
+  - name: Ensure user's Sublime config directory was removed
+    fail:
+      msg: "User's Sublime config directory was not removed!"
+    when:
+      - sublime_user_config_dir_stat.stat.exists

@@ -1,0 +1,30 @@
+---
+- name: Verify
+  hosts: all
+  vars_files:
+    - "../../defaults/main.yml"
+  tasks:
+
+  - name: Lookup preference file for user 'bob'
+    stat:
+      path: "/home/bob/{{ hth_sublime_user_config_path }}/{{ hth_sublime_user_preference_filename }}"
+    register: preference_file_stat
+    changed_when: false
+    failed_when: false
+
+  - name: Ensure preference file was created
+    fail:
+      msg: "No preference file was found for user 'bob'"
+    when: not preference_file_stat.stat.exists
+
+  - name: Lookup keymap file for user 'bob'
+    stat:
+      path: "/home/bob/{{ hth_sublime_user_config_path }}/{{ hth_sublime_user_keymap_filename }}"
+    register: keymap_file_stat
+    changed_when: false
+    failed_when: false
+
+  - name: Ensure keymap file was created
+    fail:
+      msg: "No keymap file was found for user 'bob'"
+    when: not keymap_file_stat.stat.exists

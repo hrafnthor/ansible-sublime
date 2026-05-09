@@ -8,8 +8,8 @@
   when:
     - sublime is defined
 
-- name: "HTH | Sublime | Configure repository"
-  ansible.builtin.include_tasks: repository.yml
+- name: "HTH | Sublime | Manage repository"
+  ansible.builtin.import_tasks: repository.yml
   when:
     - sublime is defined
 
@@ -17,7 +17,16 @@
   ansible.builtin.apt:
     name: "{{ 'sublime-text' if(sublime.remove is defined and sublime.remove or sublime.version is undefined) else 'sublime-text=' + (sublime.version | string)  }}"
     state: "{{ 'absent' if (sublime.remove is defined and sublime.remove) else 'latest' if (sublime.version is undefined) else 'present' }}"
-    update_cache: yes
+    #update_cache: yes
     allow_downgrade: yes
   when:
     - sublime is defined
+
+- name: "HTH | Sublime | Manage configs"
+  ansible.builtin.include_tasks: config.yml
+  loop: "{{ sublime.configs }}"
+  loop_control:
+    loop_var: config
+  when:
+    - sublime is defined
+    - sublime.configs is defined
