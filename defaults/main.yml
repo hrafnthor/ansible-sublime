@@ -1,5 +1,5 @@
 # Default path to signing key location
-hth_sublime_repository_signing_directory_path: "/etc/apt/keyrings/"
+hth_sublime_repository_signing_directory_path: "/etc/apt/keyrings"
 
 # Default name of the signing key file.
 hth_sublime_repository_signing_key_filename: "packages.sublime.org.asc"
