@@ -12,12 +12,10 @@
   ansible.builtin.include_tasks: repository.yml
   when:
     - sublime is defined
-    - sublime.signing is defined
-    - sublime.remove is undefined or not sublime.remove
 
 - name: "HTH | Sublime | Manage installation"
   ansible.builtin.apt:
-    name: "{{ 'sublime-text' if(sublime.remove is defined and sublime.remove or sublime.version is undefined) else 'sublime-text=' + sublime.version }}"
+    name: "{{ 'sublime-text' if(sublime.remove is defined and sublime.remove or sublime.version is undefined) else 'sublime-text=' + (sublime.version | string)  }}"
     state: "{{ 'absent' if (sublime.remove is defined and sublime.remove) else 'latest' if (sublime.version is undefined) else 'present' }}"
     update_cache: yes
     allow_downgrade: yes

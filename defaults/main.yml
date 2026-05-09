@@ -1,0 +1,8 @@
+# Default path to signing key location
+hth_sublime_repository_signing_key_path: "/etc/apt/keyrings/packages.sublime.org.asc"
+
+# Default path to apt preference file location
+hth_sublime_apt_preference_path: "/etc/apt/preferences.d/sublime"
+
+# Default repository url
+hth_sublime_apt_repository_url: "https://download.sublimetext.com/"

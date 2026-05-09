@@ -1,0 +1,25 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+
+  - name: Lookup sublime package version
+    command: subl --version
+    register: sublime_version
+    changed_when: false
+    failed_when: false
+
+  - name: Ensure latest sublime package was installed
+    fail:
+      msg: "'subl' was not installed!"
+    when: sublime_version.rc != 0
+
+  - name: Lookup for priority file
+    stat:
+      path: /etc/apt/preferences.d/sublime
+    register: sublime_prefs_stat
+
+  - name: Ensure priority file exists and is non zero
+    fail:
+      msg: "apt preference file for Sublime was not found or was empty!"
+    when: not sublime_prefs_stat.stat.exists or sublime_prefs_stat.stat.size == 0

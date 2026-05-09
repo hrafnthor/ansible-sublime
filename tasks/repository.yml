@@ -11,25 +11,45 @@
 - name: "HTH | Sublime | Repository | Add repository signing key"
   ansible.builtin.copy:
     src: "{{ sublime.signing.path }}"
-    dest: "/etc/apt/keyrings/packages.sublime.org.asc"
+    dest: "{{ hth_sublime_repository_signing_key_path }}"
     force: "{{ sublime.signing.force | default(omit) }}"
     owner: root
     group: root
     mode: 0644
+  when:
+    - sublime.remove is undefined or not sublime.remove
+    - sublime.signing is defined
 
-- name: "HTH | Sublime | Repository | Add repository to sources"
+- name: "HTH | Sublime | Repository | Manage repository source listing"
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/etc/apt/keyrings/packages.sublime.org.asc] https://download.sublimetext.com/ apt/stable/"
-    state: present
+    repo: "deb [signed-by={{ hth_sublime_repository_signing_key_path }}] {{ hth_sublime_apt_repository_url }} apt/stable/"
+    state: "{{ 'present' if (sublime.remove is undefined or not sublime.remove ) else 'absent' }}"
     filename: sublime
 
 - name: "HTH | Sublime | Repository | Prioritize repository"
   ansible.builtin.copy:
     src: sublime
-    dest: "/etc/apt/preferences.d/sublime"
+    dest: "{{ hth_sublime_apt_preference_path }}"
     owner: root
     group: root
     mode: 0644
   when:
+    - sublime.remove is undefined or not sublime.remove
     - sublime.priority is defined
     - sublime.priority
+
+- name: "HTH | Sublime | Repository | Remove repository signing keys"
+  ansible.builtin.file:
+    path: "{{ hth_sublime_repository_signing_key_path }}"
+    state: absent
+  when:
+    - sublime.remove is defined
+    - sublime.remove
+
+- name: "HTH | Sublime | Repository | Remove repository prioritization"
+  ansible.builtin.file:
+    path: "{{ hth_sublime_apt_preference_path }}"
+    state: absent
+  when:
+    - sublime.remove is defined
+    - sublime.remove
